@@ -1,10 +1,10 @@
 const fetch = require("node-fetch");
-const { ASSETS_FETCH_BACKLOG, ORDERS_FETCH_BACKLOG_A, ORDERS_FETCH_BACKLOG_B, TRADES_FETCH_BACKLOG_A, TRADES_FETCH_BACKLOG_B } = require("./fetch");
-const { ASSETS_FILTER, ORDERS_FILTER, TRADES_FILTER } = require("./filters");
-const { ASSETS_PARSER, ORDERS_PARSER, TRADES_PARSER } = require("./parsers");
-const database = require('better-sqlite3')('database.db', {});
-const { UPSERT_ASSETS_STATEMENT, UPSERT_ORDERS_STATEMENT, UPSERT_TRADES_STATEMENT, UPSERT_SYNC } = require("./statements")
-const { MAIN_COLLECTION, INITIAL_POLLING_TIMESTAMP } = require("./config")
+const { ASSETS_FETCH_BACKLOG, ORDERS_FETCH_BACKLOG_A, ORDERS_FETCH_BACKLOG_B, TRADES_FETCH_BACKLOG_A, TRADES_FETCH_BACKLOG_B } = require("../methods/api/fetch");
+const { ASSETS_FILTER, ORDERS_FILTER, TRADES_FILTER } = require("../methods/api/filters");
+const { ASSETS_PARSER, ORDERS_PARSER, TRADES_PARSER } = require("../methods/api/parsers");
+const database = require('better-sqlite3')('./database/database.db', {});
+const { UPSERT_ASSETS_STATEMENT, UPSERT_ORDERS_STATEMENT, UPSERT_TRADES_STATEMENT, UPSERT_SYNC } = require("../methods/sql/statements")
+const { MAIN_COLLECTION } = require("../config")
 
 const sleep = (time)=>new Promise((res, rej)=>setTimeout(res, time * 1000))
 
@@ -80,7 +80,7 @@ const main = async()=>{
         }
 
         const { collection, type, timestamp: COLLECTION_TIMESTAMP } = _collection
-        console.log(`Currently syncing ${type} of ${collection}.`)
+        // console.log(`Currently syncing ${type} of ${collection}.`)
         let result, cursors, latest_entries
 
         if(type === "ASSETS"){

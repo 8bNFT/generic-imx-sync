@@ -4,6 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "init:db": "node ./sql_scripts/create_tables.js",
+    "insert:collection": "node ./sql_scripts/insert_collection.js",
+    "sync:backlog": "node ./processes/backlog_sync.js",
+    "sync": "node ./processes/sync.js",
+    "server": "node ./server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -11,6 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "@fastify/cors": "^8.0.0",
+    "@fastify/routes": "^5.0.0",
     "better-sqlite3": "^7.5.3",
     "fastify": "^4.0.0",
     "node-fetch": "^2.6.7"

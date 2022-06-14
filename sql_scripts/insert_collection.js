@@ -1,4 +1,4 @@
-const database = require('better-sqlite3')('database.db', {});
+const database = require('better-sqlite3')('./database/database.db', {});
 
 const ADD_COLLECTION_STATEMENT = `
     INSERT OR IGNORE INTO 

@@ -1,10 +1,10 @@
 const fetch = require("node-fetch");
-const { ASSETS_FETCH, ORDERS_FETCH, TRADES_FETCH } = require("./fetch");
-const { ASSETS_FILTER, ORDERS_FILTER, TRADES_FILTER } = require("./filters");
-const { ASSETS_PARSER, ORDERS_PARSER, TRADES_PARSER } = require("./parsers");
-const database = require('better-sqlite3')('database.db', {});
-const { UPSERT_ASSETS_STATEMENT, UPSERT_ORDERS_STATEMENT, UPSERT_TRADES_STATEMENT, UPSERT_SYNC } = require("./statements")
-const { INITIAL_POLLING_TIMESTAMP, MAIN_COLLECTION } = require("./config")
+const { ASSETS_FETCH, ORDERS_FETCH, TRADES_FETCH } = require("../methods/api/fetch");
+const { ASSETS_FILTER, ORDERS_FILTER, TRADES_FILTER } = require("../methods/api/filters");
+const { ASSETS_PARSER, ORDERS_PARSER, TRADES_PARSER } = require("../methods/api/parsers");
+const database = require('better-sqlite3')('./database/database.db', {});
+const { UPSERT_ASSETS_STATEMENT, UPSERT_ORDERS_STATEMENT, UPSERT_TRADES_STATEMENT, UPSERT_SYNC } = require("../methods/sql/statements")
+const { INITIAL_POLLING_TIMESTAMP, MAIN_COLLECTION } = require("../config")
 
 const sleep = (time)=>new Promise((res, rej)=>setTimeout(res, time * 1000))
 
@@ -51,6 +51,7 @@ const fetchCollections = database.prepare(`SELECT collection FROM collections WH
 const main = async()=>{
     console.log("Realtime syncing started")
     while (true){
+        let total_count = 0
         for(let type of Object.values(TYPES)){
             const cursor = (fetchCursor.get(MAIN_COLLECTION, type))?.cursor || false
             const collections = (fetchCollections.all(type)).reduce((acc, v)=>[...acc, v.collection], [])
@@ -62,7 +63,8 @@ const main = async()=>{
             }
 
             const { result, cursor: new_cursor } = await (await fetch((METHODS[type].query)({ INITIAL_POLLING_TIMESTAMP, cursor }))).json()
-            console.log(`${result.length} results for ${type}.`)
+            total_count += result.length
+            // console.log(`${result.length} results for ${type}.`)
 
             if(result.length){
                 const filtered_collections = result.filter((METHODS[type].filter)(collections))
@@ -80,6 +82,8 @@ const main = async()=>{
 
             await sleep(0.25)
         }
+
+        if(total_count === 0) await sleep(10)
     }
 }
 

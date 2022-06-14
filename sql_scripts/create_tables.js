@@ -1,4 +1,4 @@
-const database = require('better-sqlite3')('database.db', {});
+const database = require('better-sqlite3')('./database/database.db', {});
 
 /*
     collection: "MAIN_COLLECTION"
