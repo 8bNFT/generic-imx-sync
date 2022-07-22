@@ -1,9 +1,5 @@
 const database = require('better-sqlite3')('./database/database.db', {});
 
-/*
-    collection: "MAIN_COLLECTION"
-*/
-
 const CREATE_ASSETS_STATEMENT = `
 CREATE TABLE IF NOT EXISTS 
 assets(
